@@ -42,4 +42,15 @@ public class CustomerRepositoryTests {
 
 		assertThat(findByLastName).extracting(Customer::getLastName).containsOnly(customer.getLastName());
 	}
+
+
+	@Test
+	public void testPredicate() {
+		Customer customer = new Customer("first", "last");
+		entityManager.persist(customer);
+
+		Iterable<Customer> findByLastName = customers.findAll(QCustomer.customer.lastName.eq(customer.getLastName()));
+
+		assertThat(findByLastName).extracting(Customer::getLastName).containsOnly(customer.getLastName());
+	}
 }
