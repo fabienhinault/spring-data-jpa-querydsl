@@ -1,5 +1,6 @@
 package com.example.accessingdatajpa;
 
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,25 +18,35 @@ public class AccessingDataJpaApplication {
 	}
 
 	@Bean
-	public CommandLineRunner demo(CustomerRepository repository) {
+	public CommandLineRunner demo(CustomerRepository customerRepository, StuffRepository stuffRepository) {
 		return (args) -> {
-			// save a few customers
-			repository.save(new Customer("Jack", "Bauer"));
-			repository.save(new Customer("Chloe", "O'Brian"));
-			repository.save(new Customer("Kim", "Bauer"));
-			repository.save(new Customer("David", "Palmer"));
-			repository.save(new Customer("Michelle", "Dessler"));
+			// save a few customers and stuffs
+			Customer jack = new Customer("Jack", "Bauer");
+			Customer chloe = new Customer("Chloe", "O'Brian");
+			Customer kim = new Customer("Kim", "Bauer");
+			customerRepository.save(new Customer("David", "Palmer"));
+			customerRepository.save(new Customer("Michelle", "Dessler"));
+			Stuff thing = new Stuff("thing");
+			Stuff object = new Stuff("object");
+			stuffRepository.save(thing);
+			stuffRepository.save(object);
+			jack.setStuffs(Arrays.asList(thing, object));
+			chloe.setStuffs(Arrays.asList(thing));
+			kim.setStuffs(Arrays.asList(object));
+			customerRepository.save(jack);
+			customerRepository.save(chloe);
+			customerRepository.save(kim);
 
 			// fetch all customers
 			log.info("Customers found with findAll():");
 			log.info("-------------------------------");
-			repository.findAll().forEach(customer -> {
+			customerRepository.findAll().forEach(customer -> {
 				log.info(customer.toString());
 			});
 			log.info("");
 
 			// fetch an individual customer by ID
-			Customer customer = repository.findById(1L);
+			Customer customer = customerRepository.findById(1L);
 			log.info("Customer found with findById(1L):");
 			log.info("--------------------------------");
 			log.info(customer.toString());
@@ -44,7 +55,7 @@ public class AccessingDataJpaApplication {
 			// fetch customers by last name
 			log.info("Customer found with findByLastName('Bauer'):");
 			log.info("--------------------------------------------");
-			repository.findByLastName("Bauer").forEach(bauer -> {
+			customerRepository.findByLastName("Bauer").forEach(bauer -> {
 				log.info(bauer.toString());
 			});
 			log.info("");
